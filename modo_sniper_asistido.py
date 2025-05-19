@@ -20,7 +20,10 @@ def ejecutar_modo_sniper(datos, telegram):
         elif nivel == 4:
             texto_final = "Oíme bien… esta jugada es una joya. Si tenés con qué, meté todo. Esas no vuelven, bebé."
 
-        boton = crear_boton("Abrir RushBet ya pues", "https://www.rushbet.co/casino/live")
+        boton = generar_boton_apuesta(
+    "Abrir RushBet ya", 
+    "https://www.rushbet.co/casino/live/roulette"
+)
 
         telegram.enviar_mensaje_completo(
             texto=f"**DANY SNIPER PAISA – NIVEL {nivel}**\n\n{mensaje}\n\n{texto_final}",
