@@ -1,5 +1,5 @@
 import requests
-from utils.templates.boton_generator import crear_boton
+from utils.templates.boton_generator import generar_boton_apuesta
 from analizador_ruleta import analizar_patron_ruleta
 
 def ejecutar_modo_sniper(datos, telegram):
