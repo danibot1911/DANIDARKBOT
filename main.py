@@ -42,6 +42,14 @@ def enviar_alerta_telegram(texto):
 def activar_oro():
     Thread(target=modo_oro_activo).start()
     return "MODO ORO ACTIVADO"
-
+@app.route("/sniper", methods=["POST"])
+def sniper():
+    try:
+        datos = request.get_json()
+        mensaje = datos.get("mensaje", "").lower()
+        respuesta = detectar_sniper_asistido(mensaje)
+        return {"respuesta": respuesta}, 200
+    except Exception as e:
+        return {"error": str(e)}, 500
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
