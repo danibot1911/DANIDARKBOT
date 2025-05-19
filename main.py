@@ -5,6 +5,7 @@ from loop_oro import modo_oro_activo
 import requests
 import os
 from threading import Thread
+from modo_sniper_asistido import detectar_sniper_asistido
 
 app = Flask(__name__)
 
