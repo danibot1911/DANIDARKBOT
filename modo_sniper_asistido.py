@@ -1,32 +1,43 @@
-import requests
-from utils.templates.boton_generator import generar_boton_apuesta
+from templates.boton_generator import generar_boton_apuesta
 from utils.analizador_ruleta import analizar_patron_ruleta
-from modo_sniper_asistido import ejecutar_modo_sniper
+
 def ejecutar_modo_sniper(datos, telegram):
     secuencia = datos.get("resultados", [])
     if not secuencia:
-        return
+        return "Sin datos de secuencia."
 
-    mensaje, nivel = analizar_patron_ruleta(secuencia)
+    mensaje = analizar_patron_ruleta(secuencia)
 
     if mensaje:
+        nivel = 1
+        if "6" in mensaje:
+            nivel = 1
+        elif "7" in mensaje:
+            nivel = 2
+        elif "8" in mensaje:
+            nivel = 3
+        elif "9" in mensaje:
+            nivel = 4
+
         texto_final = ""
         if nivel == 1:
-            texto_final = "Parce… eso está frío, no te calientes todavía. Si querés, mete algo suave pa tantear."
+            texto_final = "Parce… eso está fresco, pero pilas."
         elif nivel == 2:
-            texto_final = "Esta pinta buena, mi amor. Si estás en mood de hacer plata, metele unos diez luquitas sin miedo."
+            texto_final = "Esta pinta buena, vamos subiendo de nivel."
         elif nivel == 3:
-            texto_final = "Ay mijo… esto está para cobrar. Meté esos 20 o 50 si te da la cabeza, porque esta no se repite."
+            texto_final = "Ay mijo… esto está candela, pa' que sepa."
         elif nivel == 4:
-            texto_final = "Oíme bien… esta jugada es una joya. Si tenés con qué, meté todo. Esas no vuelven, bebé."
+            texto_final = "Óime bien… esta jugada está que revienta billete."
 
-        boton = generar_boton_apuesta(
-    "Abrir RushBet ya", 
-    "https://www.rushbet.co/casino/live/roulette"
-)
+        texto_alerta = f"{texto_final}\n\n{mensaje}"
+        boton = generar_boton_apuesta("Ir a RushBet", "https://www.rushbet.co")
 
-        telegram.enviar_mensaje_completo(
-            texto=f"**DANY SNIPER PAISA – NIVEL {nivel}**\n\n{mensaje}\n\n{texto_final}",
-            botones=[boton],
-            
-        )
+        if telegram:
+            telegram.enviar_mensaje_completo(
+                texto=f"**DANY SNIPER PAISA — NIVEL {nivel}**\n\n{texto_alerta}",
+                botones=[boton],
+            )
+
+        return f"Alerta enviada: {texto_alerta}"
+
+    return "Sin patrón claro para alerta."
