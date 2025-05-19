@@ -1,5 +1,4 @@
 import requests
-from utils.generador_voz_paisa import generar_audio
 from templates.boton_generator import crear_boton
 from analizador_ruleta import analizar_patron_ruleta
 
@@ -21,11 +20,10 @@ def ejecutar_modo_sniper(datos, telegram):
         elif nivel == 4:
             texto_final = "Oíme bien… esta jugada es una joya. Si tenés con qué, meté todo. Esas no vuelven, bebé."
 
-        voz_path = generar_audio(texto_final)
         boton = crear_boton("Abrir RushBet ya pues", "https://www.rushbet.co/casino/live")
 
         telegram.enviar_mensaje_completo(
             texto=f"**DANY SNIPER PAISA – NIVEL {nivel}**\n\n{mensaje}\n\n{texto_final}",
             botones=[boton],
-            audio=voz_path
+            
         )
