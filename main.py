@@ -9,10 +9,14 @@ app = Flask(__name__)
 def index():
     return "S3T RULETA OPERATIVA – LISTA PARA CAZAR"
 
-@app.route('/alerta', methods=['POST'])
+@app.route('/alerta', methods=['POST', 'GET'])
 def recibir_resultado():
-    data = request.json
-    secuencia = data.get("resultados", [])  # Espera algo como: [32, 19, 7, 18, 25, 36, 27]
+    if request.method == 'POST':
+        data = request.json
+    else:  # GET desde navegador
+        resultados_str = request.args.get("resultados", "")
+        secuencia = [int(n) for n in resultados_str.split(",") if n.isdigit()]
+        data = {"resultados": secuencia}
     
     mensaje = analizar_patron_ruleta(secuencia)
     if mensaje:
