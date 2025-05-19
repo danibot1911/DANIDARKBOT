@@ -28,3 +28,5 @@ def enviar_alerta_telegram(texto):
         "parse_mode": "Markdown"
     }
     requests.post(url, json=payload)
+import os
+app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
