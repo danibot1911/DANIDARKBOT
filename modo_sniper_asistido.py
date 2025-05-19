@@ -1,6 +1,6 @@
 import requests
 from utils.templates.boton_generator import generar_boton_apuesta
-from analizador_ruleta import analizar_patron_ruleta
+from utils.analizador_ruleta import analizar_patron_ruleta
 
 def ejecutar_modo_sniper(datos, telegram):
     secuencia = datos.get("resultados", [])
