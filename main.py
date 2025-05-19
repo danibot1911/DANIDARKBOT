@@ -34,3 +34,11 @@ def enviar_alerta_telegram(texto):
     requests.post(url, json=payload)
 import os
 app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
+from loop_oro import modo_oro_activo
+
+@app.route('/oro', methods=['GET'])
+def activar_oro():
+    from threading import Thread
+    Thread(target=modo_oro_activo).start()
+    return "MODO ORO ACTIVADO"
