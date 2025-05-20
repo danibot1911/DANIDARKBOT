@@ -1,14 +1,13 @@
-def calcular_valor_apuesta(nivel_confianza):
-    """
-    Recibe nivel_confianza (int del 1 al 5) y devuelve el valor en pesos
-    """
+# utils/valor_sugerido.py
 
-    tabla_valores = {
-        1: 2000,
-        2: 5000,
-        3: 10000,
-        4: 20000,
-        5: 50000,
-    }
-
-    return tabla_valores.get(nivel_confianza, 5000)  # valor por defecto
+def calcular_valor_apuesta(confianza):
+    if confianza >= 9:
+        return 100000
+    elif confianza >= 7:
+        return 50000
+    elif confianza >= 5:
+        return 30000
+    elif confianza >= 3:
+        return 20000
+    else:
+        return 10000# valor por defecto
