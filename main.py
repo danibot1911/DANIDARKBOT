@@ -2,6 +2,7 @@ from flask import Flask, request
 from utils.analizador_ruleta import analizar_patron_ruleta
 from config import TELEGRAM_TOKEN, TELEGRAM_CHAT_ID
 from loop_oro import modo_oro_activo
+from modo_sniper_asistido import detectar_sniper_asistido
 import requests
 import os
 from threading import Thread
@@ -46,8 +47,9 @@ def sniper():
     try:
         datos = request.get_json()
         mensaje = datos.get("mensaje", "").lower()
-        respuesta = ejecutar_modo_sniper(datos, None)
-        return {"respuesta": respuesta}, 200
+        secuencia = datos.get("secuencia", [])
+        respuesta = detectar_sniper_asistido(mensaje, secuencia)
+        return respuesta, 200
     except Exception as e:
         return {"error": str(e)}, 500
 
