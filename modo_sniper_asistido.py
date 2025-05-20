@@ -1,12 +1,17 @@
 from utils.analizador_ruleta import analizar_patron_ruleta
+from templates.boton_generator import generar_boton_apuesta
 
-def detectar_sniper_asistido(datos):
-    secuencia = datos.get("secuencia", [])
-    if not secuencia:
+def detectar_sniper_asistido(mensaje, secuencia):
+    if not secuencia or len(secuencia) < 7:
         return {"respuesta": "Sin datos de secuencia."}
 
-    mensaje = analizar_patron_ruleta(secuencia)
-    if mensaje:
-        return {"respuesta": mensaje}
-    else:
-        return {"respuesta": "Sin patrón detectado"}
+    resultado = analizar_patron_ruleta(secuencia)
+
+    if resultado:
+        boton = generar_boton_apuesta("Apostar en RushBet", "https://www.rushbet.co")
+        return {
+            "respuesta": f"{mensaje.upper()}\n\n{resultado}",
+            "boton": boton
+        }
+
+    return {"respuesta": "No se detectaron patrones."}
