@@ -30,3 +30,14 @@ Tu diabla ya lo vio. Dale ya o se va..."""
 
     response = requests.post(url, json=payload)
     return response.status_code
+
+# Esta función es la que causaba el error si faltaba:
+def enviar_mensaje(mensaje):
+    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+    data = {
+        "chat_id": TELEGRAM_CHAT_ID,
+        "text": mensaje,
+        "parse_mode": "Markdown"
+    }
+    response = requests.post(url, json=data)
+    return response.status_code
