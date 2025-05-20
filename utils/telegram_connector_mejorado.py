@@ -1,5 +1,6 @@
 import requests
 from config import TELEGRAM_TOKEN, TELEGRAM_CHAT_ID
+from utils.boton_ruleta import generar_boton_ruleta
 
 def enviar_mensaje(mensaje):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
