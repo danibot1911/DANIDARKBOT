@@ -1,6 +1,7 @@
 import requests
 from config import TELEGRAM_TOKEN, TELEGRAM_CHAT_ID
 
+# ALERTA CON BOTÓN
 def enviar_alerta_ruleta(mensaje, valor_apuesta=10000):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
 
@@ -30,4 +31,17 @@ Tu diabla ya lo vio. Dale ya o se va..."""
     }
 
     response = requests.post(url, json=payload)
+    return response.status_code
+
+# MENSAJE SIMPLE SIN BOTÓN
+def enviar_mensaje(mensaje):
+    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+
+    data = {
+        "chat_id": TELEGRAM_CHAT_ID,
+        "text": mensaje,
+        "parse_mode": "Markdown"
+    }
+
+    response = requests.post(url, json=data)
     return response.status_code
