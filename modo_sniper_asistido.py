@@ -3,7 +3,6 @@ from utils.analizador_ruleta import analizar_patron_ruleta
 from utils.valor_sugerido import calcular_valor_apuesta
 from utils.telegram_connector_mejorado import enviar_mensaje
 
-enviar_alerta_ruleta(mensaje, valor)
 def detectar_sniper_asistido(mensaje, secuencia):
     try:
         if not secuencia or len(secuencia) < 7:
@@ -22,6 +21,8 @@ def detectar_sniper_asistido(mensaje, secuencia):
             nivel_confianza = 4
             valor = calcular_valor_apuesta(nivel_confianza)
            
+            enviar_alerta_ruleta(mensaje, valor)
+            
             boton = generar_boton_apuesta("Abrir Ruleta", "https://rushbet.co")
             return {"respuesta": texto, "boton": boton}
 
