@@ -2,6 +2,11 @@ from utils.templates.boton_generator import generar_boton_apuesta
 from utils.analizador_ruleta import analizar_patron_ruleta
 from utils.telegram_connector_mejorado import enviar_mensaje
 
+mensaje = "Patrón de 7 rojos detectado. Hora de meterle al negro con confianza nivel 4."
+nivel_confianza = 4
+valor = calcular_valor_apuesta(nivel_confianza)
+
+enviar_alerta_ruleta(mensaje, valor)
 def detectar_sniper_asistido(mensaje, secuencia):
     try:
         if not secuencia or len(secuencia) < 7:
