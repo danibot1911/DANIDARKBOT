@@ -17,8 +17,8 @@ def index():
 @app.route('/alerta', methods=['POST', 'GET'])
 def recibir_resultado():
     if request.method == 'POST':
-        data = request.json
-      mensaje = "¡ALERTA S3T RULETA – MODO ORO ACTIVADO!\nSe detectaron 7 números ROJOS en las últimas 7 jugadas.\nRecomendación: Apostar NEGRO."
+    data = request.json
+    mensaje = "¡ALERTA S3T RULETA – MODO ORO ACTIVADO!\nSe detectaron 7 números ROJOS en las últimas 7 jugadas.\nRecomendación: Apostar NEGRO."
     enviar_mensaje(mensaje)
     else:
         resultados_str = request.args.get("resultados", "")
