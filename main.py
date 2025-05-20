@@ -1,6 +1,7 @@
 from flask import Flask, request
 from utils.analizador_ruleta import analizar_patron_ruleta
 from config import TELEGRAM_TOKEN, TELEGRAM_CHAT_ID
+from utils.telegram_connector_mejorado import enviar_mensaje
 from loop_oro import modo_oro_activo
 from modo_sniper_asistido import detectar_sniper_asistido
 import requests
