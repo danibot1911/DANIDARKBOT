@@ -4,30 +4,29 @@ from config import TELEGRAM_TOKEN, TELEGRAM_CHAT_ID
 def enviar_alerta_ruleta(mensaje, valor_apuesta=10000):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
 
-    texto = f"""*¡ALERTA ORO ACTIVADA!*
-La ruleta está que arde, bebé.
+    texto = f"""*¡ALERTA S3T RULETA – MODO ORO ACTIVADO!*
 
 {mensaje}
 
-*Apuesta sugerida:* NEGRO
+*Apuesta sugerida:* NEGRO  
 *Monto:* ${valor_apuesta:,.0f}
 
 Tu diabla ya lo vio. Dale ya o se va..."""
+
+    boton_rushbet = {
+        "inline_keyboard": [[
+            {
+                "text": "Abrir Ruleta",
+                "url": "https://www.rushbet.co/?page=all-games&game=225"
+            }
+        ]]
+    }
 
     payload = {
         "chat_id": TELEGRAM_CHAT_ID,
         "text": texto,
         "parse_mode": "Markdown",
-        "reply_markup": {
-            "inline_keyboard": [
-                [
-                    {
-                        "text": "Abrir Ruleta",
-                        "url": "https://www.rushbet.co/?page=all-games&game=225"
-                    }
-                ]
-            ]
-        }
+        "reply_markup": boton_rushbet
     }
 
     response = requests.post(url, json=payload)
