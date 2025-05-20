@@ -7,7 +7,7 @@ from utils.valor_sugerido import calcular_valor_apuesta
 def detectar_sniper_asistido(mensaje, secuencia):
     try:
         if not secuencia or len(secuencia) < 7:
-            return {"respuesta": "Sin datos de secuencia."}
+            return {"respuesta": "Sin datos de secuencia suficientes."}
 
         resultado = analizar_patron_ruleta(secuencia)
 
@@ -22,9 +22,11 @@ def detectar_sniper_asistido(mensaje, secuencia):
             nivel_confianza = 4
             valor = calcular_valor_apuesta(nivel_confianza)
 
-            enviar_alerta_ruleta(mensaje, valor)
+            texto += f"\nValor sugerido: *${valor:,}*"
 
-            boton = generar_boton_apuesta("Abrir Ruleta", "https://rushbet.co/?page=all-games&game=225")
+            enviar_alerta_ruleta(texto, valor)
+
+            boton = generar_boton_apuesta("Abrir Ruleta", "https://www.rushbet.co/?page=all-games&game=225")
             return {"respuesta": texto, "boton": boton}
 
         return {"respuesta": "No se detectó ningún patrón válido."}
