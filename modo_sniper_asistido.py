@@ -1,5 +1,6 @@
 from utils.templates.boton_generator import generar_boton_apuesta
 from utils.analizador_ruleta import analizar_patron_ruleta
+from connectors.telegram_mejorado_pi import enviar_alerta_telegram
 
 def detectar_sniper_asistido(mensaje, secuencia):
     try:
