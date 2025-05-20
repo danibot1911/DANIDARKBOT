@@ -2,6 +2,7 @@ from utils.templates.boton_generator import generar_boton_apuesta
 from utils.analizador_ruleta import analizar_patron_ruleta
 from utils.valor_sugerido import calcular_valor_apuesta
 from utils.telegram_connector_mejorado import enviar_mensaje
+from utils.valor_sugerido import calcular_valor_apuesta
 
 def detectar_sniper_asistido(mensaje, secuencia):
     try:
