@@ -1,35 +1,15 @@
 import telegram
-import traceback
+import os
 
-class TelegramConnectorMejorado:
-    def __init__(self, bot, chat_id):
-        self.bot = bot
-        self.chat_id = chat_id
+TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-    def procesar_mensaje(self, data):
-        try:
-            mensaje = self.extraer_mensaje(data)
-            if mensaje:
-                texto = mensaje.get("text", "")
-                if texto:
-                    print(f"[MENSAJE RECIBIDO]: {texto}")
-                    self.bot.send_message(chat_id=self.chat_id, text=f"Recibido: {texto}")
-                else:
-                    print("[AVISO] Mensaje sin texto.")
-            else:
-                print("[AVISO] No se pudo extraer mensaje.")
-        except Exception as e:
-            print(f"[ERROR] procesando mensaje: {e}")
-            traceback.print_exc()
+bot = telegram.Bot(token=TOKEN)
 
-    def extraer_mensaje(self, data):
-        try:
-            if "message" in data:
-                return data["message"]
-            elif "edited_message" in data:
-                return data["edited_message"]
-            elif "callback_query" in data and "message" in data["callback_query"]:
-                return data["callback_query"]["message"]
-        except Exception as e:
-            print(f"[ERROR] extrayendo mensaje: {e}")
-        return None
+
+def enviar_mensaje_telegram(mensaje):
+    try:
+        bot.send_message(chat_id=CHAT_ID, text=mensaje, parse_mode=telegram.ParseMode.HTML)
+        print("[DanyDarkBot] Mensaje enviado correctamente a Telegram.")
+    except Exception as e:
+        print(f"[DanyDarkBot] Error al enviar mensaje a Telegram: {e}")
