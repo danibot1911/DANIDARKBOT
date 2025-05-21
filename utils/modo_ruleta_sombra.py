@@ -2,14 +2,9 @@ import time
 from utils.analizador_ruleta import analizar_secuencia
 from utils.telegram_connector_mejorado import enviar_mensaje_telegram
 
-# Simulación: puedes reemplazar esto por conexión a una API o archivo real
-secuencias_simuladas = [
-    [17, 3, 5, 7, 9],
-    [2, 4, 6, 8, 10],
-    [25, 12, 12, 12, 12],
-    [1, 2, 3, 5, 8],
-    [33, 0, 33, 0, 33],
-]
+from utils.rushbet_scraper import obtener_numeros_ruleta  # (si tienes esta lógica)
+
+secuencia = obtener_numeros_ruleta()
 
 def modo_ruleta_sombra():
     while True:
@@ -21,6 +16,22 @@ def modo_ruleta_sombra():
         time.sleep(20)  # Tiempo entre análisis (puedes ajustar)
 
 from utils.telegram_connector_mejorado import enviar_mensaje_telegram
- 
+
+if patrones_detectados:
+    mensaje = {
+        "mensaje": f"Se detectaron {len(patrones_detectados)} patrones consecutivos",
+        "secuencia": secuencia,
+        "patrones_detectados": patrones_detectados
+    }
+    enviar_mensaje_telegram(mensaje)
+
+if len(patrones_detectados) >= 3:
+    enviar_mensaje_telegram(mensaje)
+
 if __name__ == "__main__":
-    modo_ruleta_sombra()
+    while True:
+        try:
+            ejecutar_modo_sombra()
+            time.sleep(60)  # espera entre cada escaneo
+        except Exception as e:
+            print(f"[ERROR MODO SOMBRA] {e}")
