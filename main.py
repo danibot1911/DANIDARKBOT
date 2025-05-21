@@ -71,7 +71,7 @@ def index():
 if __name__ == "__main__":
     import asyncio
 from rushbet_acceso_automatizado import obtener_numeros_ruleta
-from connectors.telegram_mejorado_pi import enviar_mensaje_telegram
+from telegram_mejorado_pi import enviar_mensaje_telegram
 import time
 
 # ID de tu chat o grupo
