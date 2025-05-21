@@ -1,33 +1,37 @@
-from flask import Flask, request
-from connectors.telegram_mejorado_pi import TelegramConnectorMejorado
+from flask import Flask, request, jsonify
+from utils.telegram_connector_mejorado import enviar_mensaje_telegram
+from utils.analizador_ruleta import analizar_secuencia
 import os
 
-# Inicializa Flask
 app = Flask(__name__)
 
-# Configura token y ID desde variables de entorno
-TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+# Carga el token y chat_id desde variables de entorno
+TOKEN_BOT = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-# Instancia el conector
-telegram_bot = TelegramConnectorMejorado(TELEGRAM_TOKEN, CHAT_ID)
+@app.route("/", methods=["GET"])
+def index():
+    return "DanyDarkBot está vivo y listo para cazar ruleta."
 
-# Ruta raíz (verificación simple)
-@app.route('/')
-def home():
-    return 'DaniDarkBot está activa y lista para la ruleta.'
-
-# Ruta que recibe las alertas POST desde otros módulos
-@app.route('/alerta', methods=['POST'])
-def recibir_alerta():
+@app.route("/a", methods=["POST"])
+def recibir_secuencia():
     try:
         data = request.json
-        mensaje = data.get('mensaje', 'Sin mensaje')
-        telegram_bot.send_alerta(mensaje)
-        return {'status': 'ok'}, 200
-    except Exception as e:
-        return {'error': str(e)}, 500
+        secuencia = data.get("secuencia", [])
+        
+        if not secuencia or not isinstance(secuencia, list):
+            return jsonify({"error": "Secuencia inválida"}), 400
 
-# Arranque
-if __name__ == '__main__':
-    app.run(debug=True)
+        mensaje_analisis = analizar_secuencia(secuencia)
+
+        if mensaje_analisis:
+            enviar_mensaje_telegram(mensaje_analisis)
+            return jsonify({"mensaje": "Alerta enviada", "secuencia": secuencia}), 200
+        else:
+            return jsonify({"mensaje": "Secuencia sin patrones relevantes"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
