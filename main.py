@@ -65,7 +65,7 @@ if __name__ == "__main__":
     import os
 
     loop = asyncio.get_event_loop()
-    loop.create_task(ciclo_monitorero()
+    loop.create_task(ciclo_monitoreo())
     loop.run_forever()
 
     print("==> DanyDarkBot corriendo en puerto dinámico")
