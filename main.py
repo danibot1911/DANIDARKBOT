@@ -112,7 +112,7 @@ if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     loop.create_task(ciclo_monitoreo())
         
-        loop.run_forever()
+    loop.run_forever()
 
 print("==> DanyDarkBot corriendo en puerto 10000")
 app.run(host='0.0.0.0', port=10000, debug=True)
