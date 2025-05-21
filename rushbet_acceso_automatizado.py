@@ -1,56 +1,34 @@
 import requests
 from bs4 import BeautifulSoup
-import time
 
-# ===== DATOS DE USUARIO RushBet =====
-USERNAME = "andresgot11@gmail.com"
-PASSWORD = "Emidaso19$"
-RUSHBET_LOGIN_URL = "https://www.rushbet.co/api/login"
-RUSHBET_GAME_URL = "https://www.rushbet.co/?page=all-games&game=225"
+# URL directa a la ruleta elegida (personalizada con el juego específico)
+RUSHBET_RULETA_URL = "https://www.rushbet.co/?page=all-games&game=225"
 
-# ===== FUNCIÓN DE ACCESO Y MONITOREO DE RULETA =====
+# Simula cabecera de navegador
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15A372 Safari/604.1"
+}
+
 def obtener_numeros_ruleta():
-    session = requests.Session()
+    try:
+        response = requests.get(RUSHBET_RULETA_URL, headers=HEADERS)
+        soup = BeautifulSoup(response.content, "html.parser")
 
-    headers = {
-        "User-Agent": "Mozilla/5.0",
-        "Content-Type": "application/json"
-    }
+        # Aquí busca en el HTML los datos de la ruleta (esto puede variar si cambia el DOM)
+        posibles_numeros = []
 
-    # Paso 1: Iniciar sesión
-    login_payload = {
-        "email": USERNAME,
-        "password": PASSWORD
-    }
+        for span in soup.find_all("span"):
+            texto = span.get_text().strip()
+            if texto.isdigit() and 0 <= int(texto) <= 36:
+                posibles_numeros.append(int(texto))
 
-    response = session.post(RUSHBET_LOGIN_URL, json=login_payload, headers=headers)
+        if posibles_numeros:
+            print(f"[RUSHBET] Números capturados: {posibles_numeros}")
+            return posibles_numeros
+        else:
+            print("[RUSHBET] No se detectaron números válidos")
+            return []
 
-    if response.status_code != 200:
-        print("[ERROR] Falló el login a RushBet.")
+    except Exception as e:
+        print(f"[ERROR] al obtener datos de la ruleta: {e}")
         return []
-
-    print("[OK] Sesión iniciada correctamente.")
-
-    # Paso 2: Ir a la ruleta
-    game_response = session.get(RUSHBET_GAME_URL)
-
-    if game_response.status_code != 200:
-        print("[ERROR] No se pudo acceder al juego.")
-        return []
-
-    soup = BeautifulSoup(game_response.text, 'html.parser')
-
-    # Paso 3: Extraer los números de la ruleta
-    numeros_detectados = []
-
-    # NOTA: Este selector puede cambiar dependiendo del HTML exacto
-    elementos = soup.find_all("div", class_="game-history-number")
-    for elem in elementos:
-        try:
-            numero = int(elem.text.strip())
-            numeros_detectados.append(numero)
-        except:
-            continue
-
-    print(f"[RUSHBET] Números obtenidos: {numeros_detectados[:10]}")
-    return numeros_detectados[:10]
