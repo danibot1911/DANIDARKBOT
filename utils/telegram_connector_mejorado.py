@@ -15,20 +15,23 @@ def enviar_alerta_ruleta(mensaje, valor_apuesta=10000):
 
 Tu diabla ya lo vio. Dale ya o se va..."""
 
-    boton_rushbet = {
-        "inline_keyboard": [[
-            {
-                "text": "Abrir Ruleta",
-                "url": "https://www.rushbet.co/?page=all-games&game=225"
-            }
-        ]]
+    def generar_boton_ruleta():
+    return {
+        "inline_keyboard": [
+            [
+                {
+                    "text": "Abrir Ruleta",
+                    "url": "https://www.rushbet.co/?page=all-games&game=225"
+                }
+            ]
+        ]
     }
 
     payload = {
         "chat_id": TELEGRAM_CHAT_ID,
         "text": texto,
         "parse_mode": "Markdown",
-        "reply_markup": boton_rushbet
+        "reply_markup": generar_boton_ruleta()
     }
 
     response = requests.post(url, json=payload)
