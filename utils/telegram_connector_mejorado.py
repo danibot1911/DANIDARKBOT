@@ -1,5 +1,6 @@
 import requests
 from config import TELEGRAM_TOKEN, TELEGRAM_CHAT_ID
+from utils.boton_ruleta import generar_boton_ruleta
 
 # ALERTA CON BOTÓN
 def enviar_alerta_ruleta(mensaje, valor_apuesta=10000):
