@@ -1,10 +1,11 @@
-# utils/rushbet_scraper.py
+import random
 
 def obtener_numeros_ruleta():
     """
-    Esta función es temporal. Simula una secuencia de ruleta como si viniera de RushBet.
-    Luego se reemplaza por scraping real o API.
+    Simula la obtención de los últimos 20 resultados de una ruleta.
+    En una versión real, aquí se conectaría a una API o se haría scraping a Rushbet.
     """
-    import random
-    secuencia_simulada = [random.choice(range(0, 37)) for _ in range(10)]
-    return secuencia_simulada
+    # Simulación: genera 20 números aleatorios entre 0 y 36
+    resultados = [random.randint(0, 36) for _ in range(20)]
+    print(f"[SCRAPER] Últimos números simulados: {resultados}")
+    return resultados
