@@ -1,14 +1,20 @@
-def analizar_patron_ruleta(secuencia):
-    rojos = {1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36}
-    negros = {2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35}
+def analizar_secuencia(secuencia):
+    if not secuencia or not isinstance(secuencia, list):
+        return {
+            "mensaje": "Secuencia inválida.",
+            "secuencia": []
+        }
 
-    ultimos = secuencia[-7:]
-    conteo_rojos = sum(1 for n in ultimos if n in rojos)
-    conteo_negros = sum(1 for n in ultimos if n in negros)
+    # Detección básica de patrones consecutivos
+    patrones = []
+    for i in range(len(secuencia) - 1):
+        if secuencia[i + 1] - secuencia[i] == 2:
+            patrones.append((secuencia[i], secuencia[i + 1]))
 
-    if conteo_rojos >= 6:
-        return f"Se detectaron {conteo_rojos} números ROJOS en las últimas 7 jugadas.\nRecomendación: **Apostar NEGRO**."
-    if conteo_negros >= 6:
-        return f"Se detectaron {conteo_negros} números NEGROS en las últimas 7 jugadas.\nRecomendación: **Apostar ROJO**."
+    mensaje = f"Se detectaron {len(patrones)} posibles patrones consecutivos de +2." if patrones else "No se detectaron patrones."
     
-    return None
+    return {
+        "mensaje": mensaje,
+        "secuencia": secuencia,
+        "patrones_detectados": patrones
+    }
