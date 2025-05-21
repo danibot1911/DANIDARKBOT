@@ -61,10 +61,13 @@ def index():
 
 # ==== INICIO AUTOMÁTICO ====
 if __name__ == "__main__":
+    import asyncio
+    import os
+
     loop = asyncio.get_event_loop()
-    loop.create_task(ciclo_monitoreo())
+    loop.create_task(ciclo_monitorero())
     loop.run_forever()
 
-    print("==> DanyDarkBot corriendo en puerto 10000")
-    app.run(host='0.0.0.0', port=10000, debug=True)
-    
+    print("==> DanyDarkBot corriendo en puerto dinámico")
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port, debug=True)
