@@ -1,6 +1,7 @@
 from flask import Flask, request
 import requests
 import datetime
+import asyncio
 from rushbet_acceso_automatizado import obtener_numeros_ruleta
 
 # ===== CONFIGURACIÓN MANUAL =====
@@ -68,4 +69,49 @@ def index():
 
 # ===== INICIO AUTOMÁTICO =====
 if __name__ == "__main__":
+    import asyncio
+from rushbet_acceso_automatizado import obtener_numeros_ruleta
+from connectors.telegram_mejorado_pi import enviar_mensaje_telegram
+import time
+
+# ID de tu chat o grupo
+CHAT_ID = "1454815028"  # Asegúrate que este sea correcto
+
+# Lista de patrones conocidos (puedes expandirla)
+PATRONES_VALIDOS = [
+    [8, 11, 10],
+    [0, 8, 20],
+    [21, 18, 16],
+    [32, 0, 5],
+]
+
+def analizar_patron(numeros):
+    if len(numeros) >= 3:
+        ultimos = numeros[-3:]
+        return ultimos in PATRONES_VALIDOS
+    return False
+
+async def ciclo_monitoreo():
+    print("Iniciando monitoreo de ruleta...")
+    historial = []
+    while True:
+        try:
+            numeros = obtener_numeros_ruleta()
+            print(f"Números detectados: {numeros}")
+            if numeros != historial:
+                historial = numeros
+                if analizar_patron(numeros):
+                    mensaje = f"DANI DARK ALERTA:\nPatrón detectado: {numeros[-3:]}\nEnlace: https://www.rushbet.co/?page=all-games&game=225"
+                    await enviar_mensaje_telegram(mensaje, CHAT_ID)
+        except Exception as e:
+            print(f"Error en monitoreo: {e}")
+        await asyncio.sleep(15)  # Revisa cada 15 segundos
+
+# Lanzar la tarea en segundo plano
+if __name__ == "__main__":
+    loop = asyncio.get_event_loop()
+    loop.create_task(ciclo_monitoreo())
+    loop.run_forever()
+    
+    
     app.run(host='0.0.0.0', port=10000)
