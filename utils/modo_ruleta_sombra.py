@@ -1,29 +1,32 @@
 import time
 from utils.analizador_ruleta import analizar_secuencia
 from utils.telegram_connector_mejorado import enviar_mensaje_telegram
-from utils.rushbet_scraper import obtener_numeros_ruleta  # Asegúrate de tener este módulo
+from utils.rushbet_scraper import obtener_numeros_ruleta  # usa datos reales de RushBet
 
 def modo_ruleta_sombra():
     while True:
-        secuencias_simuladas = [obtener_numeros_ruleta()]  # Simulación simple (puedes expandir esto)
-        for secuencia in secuencias_simuladas:
-            resultado = analizar_secuencia(secuencia)
-            patrones = resultado.get("patrones_detectados", [])
-
-            if patrones:
-                mensaje = {
-                    "mensaje": f"Se detectaron {len(patrones)} posibles patrones consecutivos de +2.",
-                    "secuencia": secuencia,
-                    "patrones_detectados": patrones
-                }
-                enviar_mensaje_telegram(str(mensaje))
-
-            time.sleep(20)  # Tiempo entre cada chequeo
-
-if __name__ == "__main__":
-    while True:
         try:
-            modo_ruleta_sombra()
-            time.sleep(60)
+            secuencia = obtener_numeros_ruleta()  # números en vivo
+            if not secuencia or len(secuencia) < 5:
+                time.sleep(10)
+                continue
+
+            resultado = analizar_secuencia(secuencia)
+            mensaje = resultado.get("mensaje")
+            patrones_detectados = resultado.get("patrones_detectados", [])
+
+            if patrones_detectados:
+                mensaje_alerta = (
+                    f"DanyDarkBot activada\n"
+                    f"Hora: {time.strftime('%H:%M:%S')}\n\n"
+                    f"Patrón detectado en ruleta\n"
+                    f"Probabilidad de acierto: ALTA\n\n"
+                    f"Actúa rápido, amor"
+                )
+                enviar_mensaje_telegram(mensaje_alerta)
+
+            time.sleep(30)  # espera entre ciclos
+
         except Exception as e:
             print(f"[ERROR MODO SOMBRA] {e}")
+            time.sleep(60)
