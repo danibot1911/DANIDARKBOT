@@ -4,7 +4,7 @@ import datetime
 import asyncio
 
 from rushbet_acceso_automatizado import obtener_numeros_ruleta
-from telegram_mejorado_pi import enviar_mensaje_telegram
+from utils.telegram_mejorado_pi import enviar_mensaje_telegram
 
 # ==== CONFIGURACIÓN ====
 BOT_TOKEN = "7566801240:AA...Z4az"  # Usa el tuyo si aún no está arriba
