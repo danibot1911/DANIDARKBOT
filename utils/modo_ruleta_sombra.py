@@ -21,15 +21,6 @@ def modo_ruleta_sombra():
         time.sleep(20)  # Tiempo entre análisis (puedes ajustar)
 
 from utils.telegram_connector_mejorado import enviar_mensaje_telegram
-
-mensaje = {
-    "mensaje": "Alerta de prueba desde el modo sombra",
-    "secuencia": [1, 3, 5, 7, 9],
-    "patrones_detectados": [[1, 3], [3, 5], [5, 7]]
-}
-enviar_mensaje_telegram(str(mensaje))
-time.sleep(30)  # Espera antes de seguir el loop
-
-
+ 
 if __name__ == "__main__":
     modo_ruleta_sombra()
