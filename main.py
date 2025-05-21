@@ -1,44 +1,33 @@
 from flask import Flask, request
-import telegram
-import os
-import json
 from connectors.telegram_mejorado_pi import TelegramConnectorMejorado
-from sistema_alertas_grupo import sistema_alertas_grupo
-from config import TOKEN, CHAT_ID, WEBHOOK_URL
+import os
 
-# Inicializa la aplicación Flask
+# Inicializa Flask
 app = Flask(__name__)
 
-# Inicializa el bot de Telegram
-bot = telegram.Bot(token=TOKEN)
+# Configura token y ID desde variables de entorno
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-# Instancia del conector mejorado
-telegram_connector = TelegramConnectorMejorado(bot=bot, chat_id=CHAT_ID)
+# Instancia el conector
+telegram_bot = TelegramConnectorMejorado(TELEGRAM_TOKEN, CHAT_ID)
 
-# Endpoint para Webhook de Telegram
-@app.route(f"/{TOKEN}", methods=["POST"])
-def webhook_handler():
-    if request.method == "POST":
-        try:
-            data = json.loads(request.data.decode("utf-8"))
-            telegram_connector.procesar_mensaje(data)
-        except Exception as e:
-            print(f"Error procesando mensaje: {e}")
-        return "OK", 200
+# Ruta raíz (verificación simple)
+@app.route('/')
+def home():
+    return 'DaniDarkBot está activa y lista para la ruleta.'
 
-# Ruta raíz de prueba
-@app.route("/", methods=["GET"])
-def index():
-    return "DANNYDARKBOT activo y cazando..."
-
-# Lanzador de monitoreo (modo autónomo)
-@app.route("/activar-alertas", methods=["GET"])
-def activar_alertas():
+# Ruta que recibe las alertas POST desde otros módulos
+@app.route('/alerta', methods=['POST'])
+def recibir_alerta():
     try:
-        sistema_alertas_grupo()
-        return "Sistema de alertas activado", 200
+        data = request.json
+        mensaje = data.get('mensaje', 'Sin mensaje')
+        telegram_bot.send_alerta(mensaje)
+        return {'status': 'ok'}, 200
     except Exception as e:
-        return f"Error activando alertas: {e}", 500
+        return {'error': str(e)}, 500
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
+# Arranque
+if __name__ == '__main__':
+    app.run(debug=True)
