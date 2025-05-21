@@ -15,7 +15,7 @@ def enviar_alerta_ruleta(mensaje, valor_apuesta=10000):
 
 Tu diabla ya lo vio. Dale ya o se va..."""
 
-    def generar_boton_ruleta():
+def generar_boton_ruleta():
     return {
         "inline_keyboard": [
             [
