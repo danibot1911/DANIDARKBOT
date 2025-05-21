@@ -2,7 +2,7 @@ from flask import Flask, request
 from utils.analizador_ruleta import analizar_patron_ruleta
 from utils.valor_sugerido import calcular_valor_apuesta
 from config import TELEGRAM_TOKEN, TELEGRAM_CHAT_ID
-from utils.telegram_connector_mejorado import enviar_mensaje
+from utils.telegram_connector_mejorado import enviar_mensaje, enviar_alerta_ruleta
 from loop_oro import modo_oro_activo
 from modo_sniper_asistido import detectar_sniper_asistido
 import requests
@@ -29,17 +29,9 @@ def recibir_resultado():
     secuencia = data.get("resultados", [])
     mensaje = analizar_patron_ruleta(secuencia)
     if mensaje:
-        enviar_alerta_telegram(mensaje)
+        valor = calcular_valor_apuesta(4)  # Nivel fijo por ahora
+        enviar_alerta_ruleta(mensaje, valor)
     return {"status": "procesado"}, 200
-
-def enviar_alerta_telegram(texto):
-    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-    payload = {
-        "chat_id": TELEGRAM_CHAT_ID,
-        "text": f"**ALERTA S3T RULETA**\n\n{texto}",
-        "parse_mode": "Markdown"
-    }
-    requests.post(url, json=payload)
 
 @app.route("/oro", methods=['GET'])
 def activar_oro():
