@@ -1,6 +1,7 @@
 import time
 from utils.analizador_ruleta import analizar_secuencia
 from utils.telegram_connector_mejorado import enviar_mensaje_telegram
+from utils.rushbet_scraper import obtener_numeros_ruleta
 
 from utils.rushbet_scraper import obtener_numeros_ruleta  # (si tienes esta lógica)
 
