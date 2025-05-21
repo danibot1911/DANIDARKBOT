@@ -11,7 +11,7 @@ from threading import Thread
 
 app = Flask(__name__)
 
-@app.route("/")
+@app.route("/", methods=["POST"])
 def index():
     return "S3T RULETA — ONLINE"
 
