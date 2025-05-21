@@ -1,40 +1,55 @@
-from flask import Flask, request, jsonify
-from utils.telegram_connector_mejorado import enviar_mensaje_telegram
-from utils.analizador_ruleta import analizar_secuencia
+from flask import Flask, request
+import requests
 import os
+import datetime
 
 app = Flask(__name__)
 
-# Carga el token y chat_id desde variables de entorno
-TOKEN_BOT = os.getenv("TELEGRAM_TOKEN")
+# ===== CONFIG =====
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+URL = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
 
-@app.route("/", methods=["GET"])
-def index():
-    return "DanyDarkBot está vivo y listo para cazar ruleta."
+# ===== FUNCIONES BASE =====
+def enviar_alerta_telegram(texto):
+    if not BOT_TOKEN or not CHAT_ID:
+        print("Token o Chat ID no configurado")
+        return
 
-@app.route("/a", methods=["POST"])
-def recibir_secuencia():
+    data = {
+        "chat_id": CHAT_ID,
+        "text": texto,
+        "parse_mode": "HTML"
+    }
+
     try:
-        data = request.json
-        secuencia = data.get("secuencia", [])
-        
-        if not secuencia or not isinstance(secuencia, list):
-            return jsonify({"error": "Secuencia inválida"}), 400
-
-        mensaje_analisis = analizar_secuencia(secuencia)
-
-        if mensaje_analisis:
-            enviar_mensaje_telegram(mensaje_analisis)
-            return jsonify({"mensaje": "Alerta enviada", "secuencia": secuencia}), 200
+        response = requests.post(URL, data=data)
+        if response.status_code != 200:
+            print("Error al enviar mensaje:", response.text)
         else:
-            return jsonify({"mensaje": "Secuencia sin patrones relevantes"}), 200
-
+            print("Mensaje enviado correctamente.")
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        print("Error al conectar con Telegram:", e)
 
-import threading
-from utils.modo_ruleta_sombra import modo_ruleta_sombra
 
+# ===== SIMULACIÓN DE ANÁLISIS RULETA =====
+def detectar_patron_ruleta():
+    # Aquí puedes integrar más adelante tu lógica real
+    ahora = datetime.datetime.now().strftime("%H:%M:%S")
+    patron_detectado = True  # Simulación de que encontró patrón
+    mensaje = f"<b>DanyDarkBot activada</b>\nHora: {ahora}\n\n<b>Patrón detectado en ruleta</b>\nPosibilidad de acierto: <b>ALTA</b>\n\n<b>Actúa rápido, amor</b>"
+
+    if patron_detectado:
+        enviar_alerta_telegram(mensaje)
+
+
+# ===== ENDPOINT PRINCIPAL (PING) =====
+@app.route('/', methods=['GET'])
+def index():
+    detectar_patron_ruleta()
+    return "DanyDarkBot en línea."
+
+
+# ===== PUNTO DE INICIO =====
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    app.run(host='0.0.0.0', port=10000)
