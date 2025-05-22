@@ -1,14 +1,22 @@
-import os
-import telegram
+import requests
 
-TOKEN = "7566801240:AAF-VrtRg4sexDFZ24azNz9AdpQc626xTnE"
-CHAT_ID = "1454815028"
+class TelegramConnectorMejorado:
+    def __init__(self, bot_token: str, chat_id: str):
+        self.bot_token = bot_token
+        self.chat_id = chat_id
+        self.api_url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
 
-bot = telegram.Bot(token=TOKEN)
-
-def enviar_mensaje_telegram(mensaje):
-    try:
-        bot.send_message(chat_id=CHAT_ID, text=mensaje, parse_mode="HTML")
-        print("Mensaje enviado a Telegram.")
-    except Exception as e:
-        print(f"[ERROR] al enviar mensaje: {e}")
+    def enviar_mensaje(self, mensaje: str):
+        payload = {
+            "chat_id": self.chat_id,
+            "text": mensaje,
+            "parse_mode": "HTML"
+        }
+        try:
+            response = requests.post(self.api_url, data=payload)
+            if response.status_code != 200:
+                print(f"[Telegram] Error al enviar mensaje: {response.text}")
+            else:
+                print("[Telegram] Mensaje enviado correctamente.")
+        except Exception as e:
+            print(f"[Telegram] Excepción al enviar mensaje: {e}")
