@@ -4,6 +4,7 @@ import datetime
 import threading
 from flask import Flask
 from bs4 import BeautifulSoup
+from utils.telegram_mejorado_pi import enviar_mensaje_telegram
 import os
 
 # ===== CONFIGURACIÓN =====
