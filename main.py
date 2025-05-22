@@ -2,7 +2,7 @@ import asyncio
 from flask import Flask, request
 import requests
 import json
-from rushbet_acceso_automatizado import obtener_alerta_ruleta
+from rushbet_acceso_automatizado import obtener_numeros_ruleta
 
 app = Flask(__name__)
 
