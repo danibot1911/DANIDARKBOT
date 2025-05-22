@@ -2,7 +2,7 @@ import time
 from scanner_ruleta import detectar_patron_ruleta
 from rushbet_acceso_automatizado import iniciar_rushbet
 from telegram_mejorado_pi import enviar_alerta_telegram
-from ejecutor_apuesta_rushbet import ejecutar_apuesta
+#from ejecutor_apuesta_rushbet import ejecutar_apuesta
 
 # MODO MANUAL
 from telegram import Update
