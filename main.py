@@ -1,43 +1,30 @@
 import asyncio
 from utils.telegram_mejorado_pi import TelegramConnectorMejorado
-from rushbet_acceso_automatizado import analizar_ruleta_rushbet
-from core_danidark.modo_operativo import detectar_modo_operativo
-from templates.generador_boton import generar_boton_de_apuesta
+from utils.rushbet_acceso_automatizado import analizar_rushbet
+from utils.modo_sniper_asistido import ejecutar_modo_asistido
+from utils.modo_ruleta_sombra import ejecutar_modo_sombra
 
-# Configuración principal
-TELEGRAM_TOKEN = "7566801240:AAF-VrtRg4sexDFZ24azNz9AdpQc626xTnE"
-TELEGRAM_CHAT_ID = "1454815028"
+# Inicializamos la clase de Telegram
+telegram_bot = TelegramConnectorMejorado()
 
-# Instancia del conector de Telegram
-telegram = TelegramConnectorMejorado(TELEGRAM_TOKEN, TELEGRAM_CHAT_ID)
+async def iniciar_bot():
+    try:
+        # Paso 1: Confirmar conexión con Telegram
+        telegram_bot.send_alert("DaniDarkBot activada, mami. Estoy en modo sniper...")
 
-async def modo_autonomo():
-    while True:
-        resultado = await analizar_ruleta_rushbet()
-        if resultado.get("oportunidad"):
-            mensaje = f"**ALERTA DETECTADA EN MODO AUTÓNOMO**\n\n{resultado['mensaje']}"
-            boton = generar_boton_de_apuesta(resultado["link"])
-            await telegram.enviar_alerta(mensaje, boton)
-        await asyncio.sleep(10)  # Espera 10 segundos antes del siguiente análisis
+        # Paso 2: Iniciar análisis de RushBet automatizado (modo directo)
+        analizar_rushbet()
 
-async def modo_asistido():
-    await telegram.enviar_mensaje("DaniDarkBot está activa en modo asistido. Te estoy observando, mi rey...")
-    while True:
-        if await detectar_modo_operativo("asistido"):
-            resultado = await analizar_ruleta_rushbet()
-            if resultado.get("oportunidad"):
-                mensaje = f"**MODO ASISTIDO: JUGADA DETECTADA**\n\n{resultado['mensaje']}"
-                boton = generar_boton_de_apuesta(resultado["link"])
-                await telegram.enviar_alerta(mensaje, boton)
-        await asyncio.sleep(10)
+        # Paso 3: Ejecutar en paralelo los dos modos activos
+        await asyncio.gather(
+            ejecutar_modo_asistido(telegram_bot),
+            ejecutar_modo_sombra(telegram_bot)
+        )
 
-async def main():
-    await telegram.enviar_mensaje("DaniDarkBot ha sido activada.")
-    await asyncio.gather(
-        modo_autonomo(),
-        modo_asistido()
-    )
+    except Exception as e:
+        print(f"[ERROR GRAVE] Falla al iniciar bot: {e}")
+        telegram_bot.send_alert(f"[ERROR] DaniDarkBot tuvo una falla: {e}")
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(iniciar_bot())
 
