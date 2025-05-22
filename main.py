@@ -1,5 +1,5 @@
 import asyncio
-from connectors.telegram_mejorado_pi import TelegramConnectorMejorado
+from utils.telegram_mejorado_pi import TelegramConnectorMejorado
 from rushbet_acceso_automatizado import analizar_ruleta_rushbet
 from core_danidark.modo_operativo import detectar_modo_operativo
 from templates.generador_boton import generar_boton_de_apuesta
