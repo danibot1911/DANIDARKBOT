@@ -1,2 +1,0 @@
-# DANIDARKBOT
-Solo modo oscuro 
