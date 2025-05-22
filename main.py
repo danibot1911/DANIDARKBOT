@@ -1,33 +1,45 @@
-# main.py
-
 import asyncio
 from connectors.telegram_mejorado_pi import TelegramConnectorMejorado
-from modo_sniper_asistido import ejecutar_modo_sniper_asistido
-from modo_ruleta_sombra import ejecutar_modo_ruleta_sombra
-from rushbet_acceso_automatizado import iniciar_sesion_rushbet
-import os
+from rushbet_acceso_automatizado import iniciar_acceso_rushbet, detectar_patrones_ruleta
+import logging
 
-# Configuración directa (puedes reemplazar por os.getenv si usas .env)
-TELEGRAM_TOKEN = '7566801240:AAF-VrtRg4sexDFZ24azNz9AdpQc626xTnE'
-TELEGRAM_CHAT_ID = '1454815028'
+# Configuración de logging
+logging.basicConfig(level=logging.INFO)
+
+# Parámetros fijos (sin .env)
+BOT_TOKEN = '7566801240:AAF-VrtRg4sexDFZ24azNz9AdpQc626xTnE'
+CHAT_ID = 1454815028
+LINK_RULETA = "https://www.rushbet.co/?page=all-games&game=225"
+
+# Modo actual
+MODO_AUTONOMO = True
+MODO_ASISTIDO = True  # Se activa si tú estás en línea
+
+# Inicializar conexión con Telegram
+telegram_bot = TelegramConnectorMejorado(BOT_TOKEN, CHAT_ID)
 
 async def main():
-    print("Iniciando DaniDarkBot...")
-    
-    # Inicia conexión Telegram
-    telegram = TelegramConnectorMejorado(token=TELEGRAM_TOKEN, chat_id=TELEGRAM_CHAT_ID)
-    
-    # Envia mensaje inicial
-    await telegram.send_message("DaniDarkBot está despierta y cazando patrones en la ruleta.")
+    try:
+        # Confirmar conexión al bot
+        await telegram_bot.enviar_mensaje("DanyDarkBot encendida, modo autónomo activado.")
+        
+        # Acceder automáticamente a RushBet
+        await iniciar_acceso_rushbet(usuario="andresgot11@gmail.com", contraseña="Emidaso19$")
 
-    # Iniciar sesión automatizada en RushBet
-    iniciar_sesion_rushbet(usuario='andresgot11@gmail.com', contrasena='Emidaso19$')
+        # Escanear patrones reales en ruleta
+        while True:
+            patrones = await detectar_patrones_ruleta()
 
-    # Ejecutar ambos modos en paralelo
-    await asyncio.gather(
-        ejecutar_modo_ruleta_sombra(telegram),
-        ejecutar_modo_sniper_asistido(telegram)
-    )
+            if patrones:
+                for jugada in patrones:
+                    mensaje = f"Oportunidad detectada en ruleta:\n\n{jugada}\n\n[Ingresar a RushBet]({LINK_RULETA})"
+                    await telegram_bot.enviar_mensaje(mensaje, parse_mode='Markdown', link_preview=False)
+            await asyncio.sleep(15)
+
+    except Exception as e:
+        logging.error(f"Error en ejecución principal: {e}")
+        await telegram_bot.enviar_mensaje("Error detectado en DanyDarkBot. Revisión urgente.")
+        raise
 
 if __name__ == '__main__':
     asyncio.run(main())
