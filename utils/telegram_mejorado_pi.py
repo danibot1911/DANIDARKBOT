@@ -1,15 +1,14 @@
-import telegram
 import os
+import telegram
 
-TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+TOKEN = "7566801240:AAF-VrtRg4sexDFZ24azNz9AdpQc626xTnE"
+CHAT_ID = "1454815028"
 
 bot = telegram.Bot(token=TOKEN)
 
-
 def enviar_mensaje_telegram(mensaje):
     try:
-        bot.send_message(chat_id=CHAT_ID, text=mensaje, parse_mode=telegram.ParseMode.HTML)
-        print("[DanyDarkBot] Mensaje enviado correctamente a Telegram.")
+        bot.send_message(chat_id=CHAT_ID, text=mensaje, parse_mode="HTML")
+        print("Mensaje enviado a Telegram.")
     except Exception as e:
-        print(f"[DanyDarkBot] Error al enviar mensaje a Telegram: {e}")
+        print(f"[ERROR] al enviar mensaje: {e}")
