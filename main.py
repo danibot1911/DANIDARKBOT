@@ -1,89 +1,82 @@
+# main.py
 
+from flask import Flask, request
 import requests
-import asyncio
 import datetime
-import threading
-import os
-from flask import Flask
-from bs4 import BeautifulSoup
+import asyncio
+from rushbet_acceso_automatizado import obtener_numeros_ruleta
+from utils.telegram_mejorado_pi import enviar_mensaje_telegram
 
-# ===== CONFIGURACIÓN =====
+# === CONFIGURACIÓN ===
 BOT_TOKEN = "7566801240:AAF-VrtRg4sexDFZ24azNz9AdpQc626xTnE"
 CHAT_ID = "1454815028"
-RUSHBET_RULETA_URL = "https://www.rushbet.co/?page=casino&game=external/roulette"
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X)"
-}
-PATRONES_VALIDOS = [[8, 11, 10], [0, 8, 20], [21, 18, 16], [32, 0, 5]]
+URL = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
 
-# ===== FLASK APP =====
 app = Flask(__name__)
 
-@app.route("/", methods=["GET"])
-def index():
-    return "DanyDarkBot en línea."
+# === PATRONES CONOCIDOS ===
+PATRONES_VALIDOS = [
+    [8, 11, 10],
+    [0, 8, 20],
+    [21, 18, 16],
+    [32, 0, 5],
+]
 
-# ===== ENVIAR A TELEGRAM =====
-def enviar_mensaje_telegram(mensaje):
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    data = {
-        "chat_id": CHAT_ID,
-        "text": mensaje,
-        "parse_mode": "HTML"
-    }
-    try:
-        response = requests.post(url, data=data)
-        print(f"[TELEGRAM] Código: {response.status_code} - {response.text}")
-    except Exception as e:
-        print(f"[ERROR TELEGRAM] {e}")
-
-# ===== EXTRAER NÚMEROS DE RUSHBET =====
-def obtener_numeros_ruleta():
-    try:
-        response = requests.get(RUSHBET_RULETA_URL, headers=HEADERS)
-        soup = BeautifulSoup(response.content, "html.parser")
-        numeros = []
-        for span in soup.find_all("span"):
-            texto = span.get_text().strip()
-            if texto.isdigit():
-                n = int(texto)
-                if 0 <= n <= 36:
-                    numeros.append(n)
-        return numeros
-    except Exception as e:
-        print(f"[ERROR RUSHBET] {e}")
-        return []
-
-# ===== DETECTOR DE PATRÓN =====
+# === DETECTOR DE PATRÓN ===
 def analizar_patron(numeros):
     if len(numeros) >= 3:
         ultimos = numeros[-3:]
         return ultimos in PATRONES_VALIDOS
     return False
 
-# ===== CICLO DE MONITOREO =====
-def iniciar_monitoreo():
+# === CICLO MONITOREO ===
+async def ciclo_monitoreo():
+    print("Iniciando monitoreo de ruleta...")
     historial = []
-    while True:
-        numeros = obtener_numeros_ruleta()
-        if numeros != historial:
-            historial = numeros
-            if analizar_patron(numeros):
-                hora = datetime.datetime.now().strftime("%H:%M:%S")
-                mensaje = (
-                    f"<b>DanyDarkBot activada</b>\n"
-                    f"Hora: {hora}\n"
-                    f"<b>Patrón detectado en ruleta</b>\n"
-                    f"Posibilidad de acierto: <b>ALTA</b>\n"
-                    f"Actúa rápido, amor"
-                )
-                enviar_mensaje_telegram(mensaje)
-        asyncio.run(asyncio.sleep(15))
 
-# ===== EJECUCIÓN PRINCIPAL =====
+    while True:
+        try:
+            numeros = obtener_numeros_ruleta()
+            print(f"Números detectados: {numeros}")
+
+            if numeros != historial:
+                historial = numeros
+
+                if analizar_patron(numeros):
+                    hora = datetime.datetime.now().strftime("%H:%M:%S")
+                    mensaje = (
+                        f"<b>DanyDarkBot activada</b>\n"
+                        f"Hora: {hora}\n\n"
+                        f"<b>Patrón detectado en ruleta</b>\n"
+                        f"Posibilidad de acierto: <b>ALTA</b>\n\n"
+                        f"Actúa rápido, amor"
+                    )
+                    await enviar_mensaje_telegram(BOT_TOKEN, CHAT_ID, mensaje)
+        except Exception as e:
+            print(f"Error en monitoreo: {e}")
+
+        await asyncio.sleep(15)  # Espera entre ciclos
+
+# === RUTA PRINCIPAL ===
+@app.route('/', methods=['GET'])
+def index():
+    return "DanyDarkBot está viva."
+
+# === RUTA PARA RECIBIR MENSAJES DE TELEGRAM ===
+@app.route(f"/{BOT_TOKEN}", methods=["POST"])
+def recibir_update():
+    data = request.get_json()
+    print(f"[UPDATE] {data}")
+    return {"ok": True}
+
+# === INICIO AUTOMÁTICO ===
 if __name__ == "__main__":
-    threading.Thread(target=iniciar_monitoreo, daemon=True).start()
+    import os
+
+    loop = asyncio.get_event_loop()
+    loop.create_task(ciclo_monitoreo())
+    loop.run_forever()
+
     port = int(os.environ.get("PORT", 10000))
-    print(f"==> DanyDarkBot corriendo en puerto {port}")
     app.run(host="0.0.0.0", port=port)
 
