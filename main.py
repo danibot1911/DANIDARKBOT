@@ -1,6 +1,6 @@
 import time
 import asyncio
-from utils.frontutils_telegram_mejorado import enviar_mensaje_telegram
+from utils.telegram_mejorado_pi import enviar_mensaje
 from utils.ruleta_acceso_automatizado import iniciar_sesion_rushbet, buscar_patrones_ruleta
 from utils.modo_asistido import verificar_estado_usuario
 
