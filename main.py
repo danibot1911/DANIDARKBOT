@@ -1,38 +1,30 @@
 import os
 from flask import Flask, request
 from telegram import Update, Bot
-from telegram.ext import Application, CallbackContext, CommandHandler
-from telegram.ext import Dispatcher
+from telegram.ext import Application, CommandHandler, ContextTypes
 
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 bot = Bot(token=TOKEN)
 
-# Flask app
 app = Flask(__name__)
-
-# Telegram app
 telegram_app = Application.builder().token(TOKEN).build()
-dispatcher: Dispatcher = telegram_app.dispatcher
 
 # Comando básico
-async def start(update: Update, context: CallbackContext):
-    await update.message.reply_text("Hola! Soy Valery, ya estoy activa.")
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Hola, ya estoy activa!")
 
-# Registrar comandos
-dispatcher.add_handler(CommandHandler("start", start))
+telegram_app.add_handler(CommandHandler("start", start))
 
-# Ruta Webhook
-@app.route(f'/{TOKEN}', methods=["POST"])
+@app.route(f"/{TOKEN}", methods=["POST"])
 def webhook():
     update = Update.de_json(request.get_json(force=True), bot)
-    dispatcher.process_update(update)
+    telegram_app.update_queue.put_nowait(update)
     return "ok"
 
-# Ruta de prueba
-@app.route("/", methods=["GET"])
+@app.route("/")
 def home():
-    return "Bot activo y escuchando..."
+    return "Bot en línea."
 
 if __name__ == "__main__":
-    PORT = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=PORT)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
