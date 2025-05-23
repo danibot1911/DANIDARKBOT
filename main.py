@@ -1,38 +1,36 @@
 import os
+from flask import Flask, request
 from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+from telegram.ext import Application, CallbackContext, MessageHandler, filters
+from telegram.ext import Dispatcher
 from valery_bot import manejar_mensaje_valery
 from dotenv import load_dotenv
-from flask import Flask, request
 
 load_dotenv()
+
 TOKEN = os.getenv("TELEGRAM_TOKEN")
-WEBHOOK_URL = os.getenv("WEBHOOK_URL")
+BOT_URL = os.getenv("BOT_URL")  # Debes poner esto en las variables de entorno
 
-app_telegram = Application.builder().token(TOKEN).build()
+app = Flask(__name__)
+application = Application.builder().token(TOKEN).build()
 
-# Ruta Flask
-flask_app = Flask(__name__)
+# Añadir manejador
+application.add_handler(MessageHandler(filters.TEXT, manejar_mensaje_valery))
 
-@flask_app.route("/")
+@app.route("/")
 def index():
-    return "Bot is alive!"
+    return "Bot Valery activo."
 
-@flask_app.route(f"/webhook/{TOKEN}", methods=["POST"])
+@app.route(f"/{TOKEN}", methods=["POST"])
 def webhook():
-    update = Update.de_json(request.get_json(force=True), app_telegram.bot)
-    app_telegram.update_queue.put(update)
+    update = Update.de_json(request.get_json(force=True), application.bot)
+    application.update_queue.put(update)
     return "ok"
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Hola, soy Valery.")
-
-app_telegram.add_handler(CommandHandler("start", start))
-app_telegram.add_handler(MessageHandler(filters.TEXT, manejar_mensaje_valery))
-
-async def set_webhook():
-    await app_telegram.bot.set_webhook(f"{WEBHOOK_URL}/webhook/{TOKEN}")
-
-app_telegram.run_polling = lambda: None  # Evita que se ejecute polling por error
-app_telegram.initialize()
-app_telegram.post_init = set_webhook
+if __name__ == "__main__":
+    application.run_webhook(
+        listen="0.0.0.0",
+        port=int(os.environ.get('PORT', 5000)),
+        url_path=TOKEN,
+        webhook_url=f"{os.getenv('BOT_URL')}/{TOKEN}"
+    )
