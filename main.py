@@ -1,30 +1,25 @@
-import os
 from flask import Flask, request
-from telegram import Update, Bot
-from telegram.ext import Application, CommandHandler, ContextTypes
+import telegram
+import os
 
-TOKEN = os.getenv("TELEGRAM_TOKEN")
-bot = Bot(token=TOKEN)
+TOKEN = "7566801240:AAFGVOjPdIMG2eUIyXRiua4YCmUDBWaxEAc"  # ← tu token real
+bot = telegram.Bot(token=TOKEN)
 
 app = Flask(__name__)
-telegram_app = Application.builder().token(TOKEN).build()
 
-# Comando básico
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Hola, ya estoy activa!")
-
-telegram_app.add_handler(CommandHandler("start", start))
-
-@app.route(f"/{TOKEN}", methods=["POST"])
+@app.route(f'/{TOKEN}', methods=['POST'])
 def webhook():
-    update = Update.de_json(request.get_json(force=True), bot)
-    telegram_app.update_queue.put_nowait(update)
-    return "ok"
+    update = telegram.Update.de_json(request.get_json(force=True), bot)
+    chat_id = update.effective_chat.id
+    message = update.message.text
 
-@app.route("/")
-def home():
-    return "Bot en línea."
+    # Respuesta básica del bot
+    bot.send_message(chat_id=chat_id, text=f"Hola mi amor, recibí: '{message}'")
+    return 'ok'
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+@app.route('/')
+def index():
+    return 'DaniDarkBot está activo.'
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=10000)
