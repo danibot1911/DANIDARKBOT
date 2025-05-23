@@ -4,14 +4,12 @@ from valery_bot import manejar_mensaje_valery
 from dotenv import load_dotenv
 
 load_dotenv()
-
 TOKEN = os.getenv("TELEGRAM_TOKEN")
-
-from valery_bot import manejar_mensaje_valery
 
 def main():
     app = Application.builder().token(TOKEN).build()
-    app.add_handler(MessageHandler(filters.TEXT, manejar_mensaje_valery))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, manejar_mensaje_valery))
+    print("ValeryLaMala está activa y lista para seducir gringos.")
     app.run_polling()
 
 if __name__ == "__main__":
