@@ -1,3 +1,1 @@
-python-binance
-pyTelegramBotAPI
-python-dotenv
+flask
